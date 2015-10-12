@@ -1,0 +1,6 @@
+{
+  "generator-spring-microservice": {
+    "packageName": "no.microservices.typeahead",
+    "packageFolder": "no/microservices/typeahead"
+  }
+}
