@@ -13,7 +13,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 @EnableFeignClients
 @EnableCircuitBreaker
 @EnableOAuth2Resource

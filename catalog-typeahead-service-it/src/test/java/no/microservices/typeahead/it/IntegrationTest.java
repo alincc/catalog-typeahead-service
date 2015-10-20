@@ -36,8 +36,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.HashMap;
 
-        import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -98,8 +99,8 @@ public class IntegrationTest {
 
     @Test
     public void helloWorldTest() throws URISyntaxException {
-        URI uri = new URI("http://localhost:" + port + "/");
-        ResponseEntity<String> response = rest.getForEntity(uri, String.class);
+        String uri = "http://localhost:" + port + "/suggestions?query={query}&mediaType={mediaType}";
+        ResponseEntity<String> response = rest.getForEntity(uri, String.class, "Knu", "all");
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
