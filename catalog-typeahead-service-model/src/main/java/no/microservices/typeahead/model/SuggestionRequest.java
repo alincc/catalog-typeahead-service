@@ -8,7 +8,7 @@ import javax.validation.constraints.Max;
  * Created by andreasb on 15.10.15.
  */
 public class SuggestionRequest {
-    @Length(max = 256)
+    @Length(max = 1024)
     private String query;
 
     @Length(max = 32)

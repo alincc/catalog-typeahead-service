@@ -111,20 +111,6 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
         </dependency>
-        <!-- Embedded ES Plugins -->
-        <dependency>
-            <groupId>no.nb.sesam</groupId>
-            <artifactId>oletobias-elasticsearch-plugin</artifactId>
-            <version>3.30</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch-analysis-icu</artifactId>
-            <!-- Embedded ES Version: es-1.3 -->
-            <version>2.3.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>

@@ -11,15 +11,15 @@ public class SuggestionRoot {
     public SuggestionRoot() {
     }
 
-    public SuggestionRoot(List<SuggestionResponse> suggestionElements) {
-        this.items = suggestionElements;
+    public SuggestionRoot(List<SuggestionResponse> items) {
+        this.items = items;
     }
 
-    public List<SuggestionResponse> getSuggestionElements() {
+    public List<SuggestionResponse> getItems() {
         return items;
     }
 
-    public void setSuggestionElements(List<SuggestionResponse> suggestionElements) {
-        this.items = suggestionElements;
+    public void setItems(List<SuggestionResponse> items) {
+        this.items = items;
     }
 }
