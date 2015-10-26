@@ -15,7 +15,7 @@ public class SuggestionRequest {
     private String mediaType = "ALL";
 
     @Max(100)
-    private int maxResults = 10;
+    private int size = 10;
 
     private boolean addHighlight;
 
@@ -35,12 +35,12 @@ public class SuggestionRequest {
         this.mediaType = mediaType;
     }
 
-    public int getMaxResults() {
-        return maxResults;
+    public int getSize() {
+        return size;
     }
 
-    public void setMaxResults(int maxResults) {
-        this.maxResults = maxResults;
+    public void setSize(int size) {
+        this.size = size;
     }
 
     public boolean isAddHighlight() {

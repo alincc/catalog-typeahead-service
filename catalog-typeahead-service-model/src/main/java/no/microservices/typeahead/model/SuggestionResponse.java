@@ -10,6 +10,9 @@ public class SuggestionResponse {
     private String sentence;
     private int count;
 
+    public SuggestionResponse() {
+    }
+
     public SuggestionResponse(String sentence, int count) {
         this.sentence = sentence;
         this.count = count;

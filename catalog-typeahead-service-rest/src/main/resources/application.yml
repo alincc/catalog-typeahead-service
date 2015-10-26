@@ -24,7 +24,8 @@ eureka:
 elastic:
   hosts:
     - localhost
-  index: suggestioncounters
+  suggestionIndex: suggestioncounters
+  expressionIndex: expressionrecords
 
 ---
 spring:

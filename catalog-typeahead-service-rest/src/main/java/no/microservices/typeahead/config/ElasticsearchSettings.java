@@ -14,23 +14,31 @@ import java.util.List;
 public class ElasticsearchSettings {
 
     private List<String> hosts = new ArrayList<>();
-    private String index;
+    private String suggestionIndex;
+    private String expressionIndex;
 
     public List<String> getHosts() {
         return hosts;
     }
 
-    public String getIndex() {
-        return index;
+    public String getSuggestionIndex() {
+        return suggestionIndex;
     }
 
+    public String getExpressionIndex() {
+        return expressionIndex;
+    }
+
+    public void setExpressionIndex(String expressionIndex) {
+        this.expressionIndex = expressionIndex;
+    }
 
     public void setHosts(List<String> hosts) {
         this.hosts = hosts;
     }
 
-    public void setIndex(String index) {
-        this.index = index;
+    public void setSuggestionIndex(String suggestionIndex) {
+        this.suggestionIndex = suggestionIndex;
     }
 
 }
