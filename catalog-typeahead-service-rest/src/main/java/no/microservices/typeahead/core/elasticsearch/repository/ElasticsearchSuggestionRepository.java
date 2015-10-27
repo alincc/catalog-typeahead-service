@@ -90,7 +90,7 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     @Override
     public List<SuggestionFieldResponse> getSuggestionsField(String query, String field, String mediaType, int size) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        if (!mediaType.equalsIgnoreCase("ALL") && !StringUtils.isBlank(mediaType)) {
+        if (!"ALL".equalsIgnoreCase(mediaType) && !StringUtils.isBlank(mediaType)) {
             queryBuilder.must(QueryBuilders.queryStringQuery(mediaType).field("mediatype"));
         }
         queryBuilder.must(QueryBuilders.queryStringQuery(query + "*").field(field));
