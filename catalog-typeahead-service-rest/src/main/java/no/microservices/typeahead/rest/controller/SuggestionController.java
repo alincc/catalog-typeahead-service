@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/catalog/typeahead")
+@RequestMapping("/v1/catalog/typeahead")
 public class SuggestionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SuggestionController.class);

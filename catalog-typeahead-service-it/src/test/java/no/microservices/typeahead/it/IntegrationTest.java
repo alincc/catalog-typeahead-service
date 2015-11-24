@@ -61,7 +61,7 @@ public class IntegrationTest {
 
     @Test
     public void suggestionQueryTest() {
-        String uri = "http://localhost:" + port + "/catalog/typeahead/suggestions?query={query}&mediaType={mediaType}";
+        String uri = "http://localhost:" + port + "/v1/catalog/typeahead/suggestions?query={query}&mediaType={mediaType}";
         ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Knu", "all");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Knut Lippestad", response.getBody().getItems().get(0).getSentence());
@@ -70,7 +70,7 @@ public class IntegrationTest {
 
     @Test
     public void suggestionInsertTest() {
-        String postUri = "http://localhost:" + port + "/catalog/typeahead/suggestions";
+        String postUri = "http://localhost:" + port + "/v1/catalog/typeahead/suggestions";
         SuggestionQuery request1 = new SuggestionQuery("Knut Hamsund", "bøker");
         SuggestionQuery request2 = new SuggestionQuery("Knut Lippestad", "bøker");
         SuggestionQuery request3 = new SuggestionQuery("Knut Limstrand", "bøker");
@@ -82,14 +82,14 @@ public class IntegrationTest {
         assertEquals(HttpStatus.OK, response2.getStatusCode());
         assertEquals(HttpStatus.OK, response3.getStatusCode());
 
-        String uri = "http://localhost:" + port + "/catalog/typeahead/suggestions?query={query}&mediaType={mediaType}";
+        String uri = "http://localhost:" + port + "/v1/catalog/typeahead/suggestions?query={query}&mediaType={mediaType}";
         ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Knut", "bøker");
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void suggestionFieldsTest() {
-        String uri = "http://localhost:" + port + "/catalog/typeahead/suggestions/fields/namecreators/?query={query}";
+        String uri = "http://localhost:" + port + "/v1/catalog/typeahead/suggestions/fields/namecreators/?query={query}";
         ResponseEntity<SuggestionFieldRoot> response = rest.getForEntity(uri, SuggestionFieldRoot.class, "K");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Koerner, Steen", response.getBody().getItems().get(0).getSentence());
