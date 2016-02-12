@@ -3,42 +3,11 @@ info:
     name: catalog-typeahead-service
     description: Gives search suggestions based on other searches
 
-endpoints:
-  restart:
-    enabled: true
-  refresh:
-    enabled: true
-
 server:
-  port: 8012
-
-eureka:
-  instance:
-    preferIpAddress: true
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+  port: 0
 
 elastic:
   hosts:
     - localhost
   suggestionIndex: suggestioncounters
   expressionIndex: expressionrecords
-
----
-spring:
-    profiles: docker
-
-server:
-  port: 8080
-
-eureka:
-  instance:
-    preferIpAddress: true
-  client:
-    serviceUrl:
-      defaultZone: http://discovery:8761/eureka/
-
-catalog:
-  esHosts:
-    - elasticsearch
