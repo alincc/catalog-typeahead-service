@@ -38,9 +38,4 @@ public class SuggestionController {
         suggestionService.saveSuggestion(suggestionQuery.getSentence(), suggestionQuery.getMediaType());
         return new ResponseEntity(HttpStatus.OK);
     }
-
-    @RequestMapping(value = "/hello", method = RequestMethod.GET)
-    public String sayHello() {
-        return "Hello World!";
-    }
 }
