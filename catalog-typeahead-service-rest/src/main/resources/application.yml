@@ -4,7 +4,7 @@ info:
     description: Gives search suggestions based on other searches
 
 server:
-  port: 0
+  port: 8001
 
 elastic:
   hosts:
