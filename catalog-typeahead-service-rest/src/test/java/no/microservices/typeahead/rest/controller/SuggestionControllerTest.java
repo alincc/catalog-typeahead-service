@@ -5,8 +5,6 @@ import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
 import no.microservices.typeahead.model.SuggestionRoot;
-import no.microservices.typeahead.model.field.SuggestionFieldResponse;
-import no.microservices.typeahead.model.field.SuggestionFieldRoot;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,14 +53,14 @@ public class SuggestionControllerTest {
         SuggestionRequest suggestionRequest = new SuggestionRequest();
         suggestionRequest.setQ("Alf");
         String field = "namecreator";
-        SuggestionFieldResponse suggestionFieldResponse = new SuggestionFieldResponse("Alfred Bræle");
-        SuggestionFieldRoot suggestionFieldRoot = new SuggestionFieldRoot(Arrays.asList(suggestionFieldResponse));
+        SuggestionResponse suggestionFieldResponse = new SuggestionResponse("Alfred Bræle","Alfred Bræle",0);
+        SuggestionRoot suggestionFieldRoot = new SuggestionRoot(Arrays.asList(suggestionFieldResponse));
 
         when(suggestionService.getSuggestionsField(suggestionRequest, field)).thenReturn(suggestionFieldRoot);
 
-        ResponseEntity<SuggestionFieldRoot> entity = suggestionController.getSuggestionField(field, suggestionRequest);
+        ResponseEntity<SuggestionRoot> entity = suggestionController.getSuggestionField(field, suggestionRequest);
 
-        assertThat("Alfred Bræle should be returned", entity.getBody().getItems().get(0).getSentence(), is("Alfred Bræle"));
+        assertThat("Alfred Bræle should be returned", entity.getBody().getItems().get(0).getLabel(), is("Alfred Bræle"));
 
         verify(suggestionService).getSuggestionsField(suggestionRequest, field);
         verifyNoMoreInteractions(suggestionService);

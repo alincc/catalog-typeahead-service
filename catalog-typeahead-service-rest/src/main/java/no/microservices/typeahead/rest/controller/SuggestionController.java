@@ -4,7 +4,6 @@ import no.microservices.typeahead.core.elasticsearch.service.ISuggestionService;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionRoot;
-import no.microservices.typeahead.model.field.SuggestionFieldRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,9 @@ public class SuggestionController {
     }
 
     @RequestMapping(value = "/suggestions/fields/{field}", method = RequestMethod.GET)
-    public ResponseEntity<SuggestionFieldRoot> getSuggestionField(@PathVariable("field") String field, SuggestionRequest suggestionRequest) {
-        SuggestionFieldRoot suggestionFieldRoot = suggestionService.getSuggestionsField(suggestionRequest, field);
-        return new ResponseEntity<>(suggestionFieldRoot, HttpStatus.OK);
+    public ResponseEntity<SuggestionRoot> getSuggestionField(@PathVariable("field") String field, SuggestionRequest suggestionRequest) {
+        SuggestionRoot suggestionField = suggestionService.getSuggestionsField(suggestionRequest, field);
+        return new ResponseEntity<>(suggestionField, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/suggestions", method = RequestMethod.POST)

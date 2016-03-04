@@ -6,8 +6,6 @@ import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
 import no.microservices.typeahead.model.SuggestionRoot;
-import no.microservices.typeahead.model.field.SuggestionFieldResponse;
-import no.microservices.typeahead.model.field.SuggestionFieldRoot;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,13 +48,13 @@ public class SuggestionServiceTest {
         SuggestionRequest suggestionRequest = new SuggestionRequest();
         suggestionRequest.setQ("Knut");
         String field = "namecreator";
-        SuggestionFieldResponse suggestionFieldResponse = new SuggestionFieldResponse("Knut Hamsun");
+        SuggestionResponse suggestionFieldResponse = new SuggestionResponse("Knut Hamsun","Knut Hamsun",0);
 
         when(suggestionRepository.getSuggestionsField(suggestionRequest, field)).thenReturn(Arrays.asList(suggestionFieldResponse));
 
-        SuggestionFieldRoot suggestionFieldRoot = suggestionService.getSuggestionsField(suggestionRequest, field);
+        SuggestionRoot suggestionFieldRoot = suggestionService.getSuggestionsField(suggestionRequest, field);
 
-        assertThat("Should return Knut Hamsun", suggestionFieldRoot.getItems().get(0).getSentence(), is("Knut Hamsun"));
+        assertThat("Should return Knut Hamsun", suggestionFieldRoot.getItems().get(0).getLabel(), is("Knut Hamsun"));
 
         verify(suggestionRepository).getSuggestionsField(suggestionRequest, field);
         verifyNoMoreInteractions(suggestionRepository);

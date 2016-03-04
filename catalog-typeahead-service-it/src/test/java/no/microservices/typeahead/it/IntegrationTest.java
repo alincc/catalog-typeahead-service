@@ -3,7 +3,6 @@ package no.microservices.typeahead.it;
 import no.microservices.typeahead.Application;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRoot;
-import no.microservices.typeahead.model.field.SuggestionFieldRoot;
 import org.elasticsearch.client.Client;
 import org.junit.After;
 import org.junit.Before;
@@ -99,8 +98,8 @@ public class IntegrationTest {
     @Test
     public void suggestionFieldsTest() {
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions/fields/namecreators/?q={query}";
-        ResponseEntity<SuggestionFieldRoot> response = rest.getForEntity(uri, SuggestionFieldRoot.class, "K");
+        ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "K");
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Koerner, Steen", response.getBody().getItems().get(0).getSentence());
+        assertEquals("Koerner, Steen", response.getBody().getItems().get(0).getLabel());
     }
 }

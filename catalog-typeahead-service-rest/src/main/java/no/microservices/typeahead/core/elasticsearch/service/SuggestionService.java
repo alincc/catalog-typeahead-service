@@ -6,8 +6,6 @@ import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
 import no.microservices.typeahead.model.SuggestionRoot;
-import no.microservices.typeahead.model.field.SuggestionFieldResponse;
-import no.microservices.typeahead.model.field.SuggestionFieldRoot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +30,9 @@ public class SuggestionService implements ISuggestionService {
     }
 
     @Override
-    public SuggestionFieldRoot getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
-        List<SuggestionFieldResponse> suggestionElements = suggestionRepository.getSuggestionsField(suggestionRequest, field);
-        return new SuggestionFieldRoot(suggestionElements);
+    public SuggestionRoot getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
+        List<SuggestionResponse> suggestionElements = suggestionRepository.getSuggestionsField(suggestionRequest, field);
+        return new SuggestionRoot(suggestionElements);
     }
 
     @Override

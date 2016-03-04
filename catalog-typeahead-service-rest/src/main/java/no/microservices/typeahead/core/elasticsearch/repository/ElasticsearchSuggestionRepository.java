@@ -4,7 +4,6 @@ import no.microservices.typeahead.config.ElasticsearchSettings;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
-import no.microservices.typeahead.model.field.SuggestionFieldResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -101,7 +100,7 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     }
 
     @Override
-    public List<SuggestionFieldResponse> getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
+    public List<SuggestionResponse> getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!"ALL".equalsIgnoreCase(suggestionRequest.getMediatype()) && !StringUtils.isBlank(suggestionRequest.getMediatype())) {
             queryBuilder.must(QueryBuilders.queryStringQuery(suggestionRequest.getMediatype()).field("mediatype"));
@@ -117,14 +116,13 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
                 .setQuery(queryBuilder)
                 .addAggregation(termsBuilder)
                 .setFrom(0).setSize(suggestionRequest.getSize())
-                .setExplain(true)
                 .execute()
                 .actionGet();
 
-        List<SuggestionFieldResponse> suggestions = new ArrayList<>();
+        List<SuggestionResponse> suggestions = new ArrayList<>();
 
         Terms terms = response.getAggregations().get("field");
-        suggestions.addAll(terms.getBuckets().stream().map(entry -> new SuggestionFieldResponse(entry.getKey())).collect(Collectors.toList()));
+        suggestions.addAll(terms.getBuckets().stream().map(entry -> new SuggestionResponse(entry.getKey(),entry.getKey(),0)).collect(Collectors.toList()));
 
         return suggestions;
     }
