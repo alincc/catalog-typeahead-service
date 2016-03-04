@@ -6,24 +6,33 @@ package no.microservices.typeahead.model;
 
 
 public class SuggestionResponse {
-
-    private String sentence;
+    private String label;
+    private String value;
     private int count;
 
     public SuggestionResponse() {
     }
 
-    public SuggestionResponse(String sentence, int count) {
-        this.sentence = sentence;
+    public SuggestionResponse(String label, String value, int count) {
+        this.label = label;
+        this.value = value;
         this.count = count;
     }
 
-    public String getSentence() {
-        return sentence;
+    public String getLabel() {
+        return label;
     }
 
-    public void setSentence(String sentence) {
-        this.sentence = sentence;
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public int getCount() {

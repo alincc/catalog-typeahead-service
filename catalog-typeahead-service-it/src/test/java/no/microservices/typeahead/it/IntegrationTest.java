@@ -23,7 +23,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -61,11 +63,18 @@ public class IntegrationTest {
 
     @Test
     public void suggestionQueryTest() {
-        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions?query={query}&mediaType={mediaType}";
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions?q={query}&mediatype={mediatype}";
         ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Knu", "all");
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Knut Lippestad", response.getBody().getItems().get(0).getSentence());
+        assertEquals("Knut Lippestad", response.getBody().getItems().get(0).getValue());
         assertEquals(165, response.getBody().getItems().get(0).getCount());
+    }
+
+    @Test
+    public void testHighlight() {
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions?q={query}&mediatype={mediatype}&highlight=true";
+        ResponseEntity<SuggestionRoot> entity = rest.getForEntity(uri, SuggestionRoot.class, "Knut", "all");
+        assertThat("Text is highlighted", entity.getBody().getItems().get(0).getLabel(), is("<em>Knut</em> Lippestad"));
     }
 
     @Test
@@ -82,14 +91,14 @@ public class IntegrationTest {
         assertEquals(HttpStatus.OK, response2.getStatusCode());
         assertEquals(HttpStatus.OK, response3.getStatusCode());
 
-        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions?query={query}&mediaType={mediaType}";
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions?q={query}&mediatype={mediatype}";
         ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Knut", "bøker");
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void suggestionFieldsTest() {
-        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions/fields/namecreators/?query={query}";
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions/fields/namecreators/?q={query}";
         ResponseEntity<SuggestionFieldRoot> response = rest.getForEntity(uri, SuggestionFieldRoot.class, "K");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Koerner, Steen", response.getBody().getItems().get(0).getSentence());

@@ -1,14 +1,18 @@
 package no.microservices.typeahead.core.elasticsearch.repository;
 
 import no.microservices.typeahead.config.ElasticsearchSettings;
+import no.microservices.typeahead.model.SuggestionQuery;
+import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
 import no.microservices.typeahead.model.field.SuggestionFieldResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.lang3.StringUtils;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.script.ScriptService;
@@ -34,25 +38,27 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
  */
 @Repository
 public class ElasticsearchSuggestionRepository implements SuggestionRepository {
-
     private static final Logger LOG = LoggerFactory.getLogger(SuggestionRepository.class);
 
+    private final Client esClient;
+    private final ElasticsearchSettings esSettings;
 
     @Autowired
-    private Client esClient;
+    public ElasticsearchSuggestionRepository(Client esClient, ElasticsearchSettings esSettings) {
+        this.esClient = esClient;
+        this.esSettings = esSettings;
+    }
 
-    @Autowired
-    private ElasticsearchSettings esSettings;
 
     @Override
-    public void addSuggestion(String sentence, String mediaType) throws Exception {
-        String sentenceId = sentence.hashCode() + "";
-        String mediaTypeFixed = mediaType.toLowerCase().trim();
+    public void addSuggestion(SuggestionQuery suggestionQuery) throws Exception {
+        String sentenceId = suggestionQuery.getSentence().hashCode() + "";
+        String mediaTypeFixed = suggestionQuery.getMediatype().toLowerCase().trim();
 
         IndexRequest indexRequest = new IndexRequest(esSettings.getSuggestionIndex(), "suggestion", sentenceId)
                 .source(jsonBuilder()
                         .startObject()
-                        .field("sentence", sentence)
+                        .field("sentence", suggestionQuery.getSentence())
                         .field("type_" + mediaTypeFixed, 0)
                         .endObject());
 
@@ -65,45 +71,52 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     }
 
     @Override
-    public List<SuggestionResponse> getSuggestions(String query, String mediaType, int size) {
-        String mediaTypeFixed = mediaType.toLowerCase().trim();
+    public List<SuggestionResponse> getSuggestions(SuggestionRequest suggestionRequest) {
+        String mediaTypeFixed = suggestionRequest.getMediatype().toLowerCase().trim();
         List<SuggestionResponse> suggestions = new ArrayList<>();
 
-        SearchResponse response = esClient.prepareSearch(esSettings.getSuggestionIndex())
+        SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch(esSettings.getSuggestionIndex())
                 .setTypes("suggestion")
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchPhrasePrefixQuery("sentence", query))
-                .setFrom(0).setSize(size).setExplain(true)
+                .setQuery(QueryBuilders.matchPhrasePrefixQuery("sentence", suggestionRequest.getQ()))
+                .setFrom(0).setSize(suggestionRequest.getSize()).setExplain(true)
                 .addSort("type_" + mediaTypeFixed, SortOrder.DESC)
-                .addSort("sentence", SortOrder.ASC)
-                .execute()
+                .addSort("sentence", SortOrder.ASC);
+
+        if (suggestionRequest.isHighlight()) {
+            searchRequestBuilder.addHighlightedField("sentence", 0, 0);
+        }
+
+        SearchResponse response = searchRequestBuilder.execute()
                 .actionGet();
 
         for (SearchHit hit : response.getHits().getHits()) {
             int count = (hit.getSource().get("type_" + mediaTypeFixed) != null) ? (int)hit.getSource().get("type_" + mediaTypeFixed) : 0;
-            suggestions.add(new SuggestionResponse(hit.getSource().get("sentence").toString(), count));
+            String value = hit.getSource().get("sentence").toString();
+            String label = (hit.getHighlightFields().get("sentence") != null) ? highlightedText(hit.getHighlightFields().get("sentence").fragments()) : value;
+            suggestions.add(new SuggestionResponse(label, value, count));
         }
 
         return suggestions;
     }
 
     @Override
-    public List<SuggestionFieldResponse> getSuggestionsField(String query, String field, String mediaType, int size) {
+    public List<SuggestionFieldResponse> getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        if (!"ALL".equalsIgnoreCase(mediaType) && !StringUtils.isBlank(mediaType)) {
-            queryBuilder.must(QueryBuilders.queryStringQuery(mediaType).field("mediatype"));
+        if (!"ALL".equalsIgnoreCase(suggestionRequest.getMediatype()) && !StringUtils.isBlank(suggestionRequest.getMediatype())) {
+            queryBuilder.must(QueryBuilders.queryStringQuery(suggestionRequest.getMediatype()).field("mediatype"));
         }
-        queryBuilder.must(QueryBuilders.queryStringQuery(query + "*").field(field));
+        queryBuilder.must(QueryBuilders.queryStringQuery(suggestionRequest.getQ() + "*").field(field));
 
-        TermsBuilder termsBuilder = AggregationBuilders.terms("field").field(field + ".untouched").size(size);
-        termsBuilder.include(buildUntouchedRegex(query), Pattern.CASE_INSENSITIVE);
+        TermsBuilder termsBuilder = AggregationBuilders.terms("field").field(field + ".untouched").size(suggestionRequest.getSize());
+        termsBuilder.include(buildUntouchedRegex(suggestionRequest.getQ()), Pattern.CASE_INSENSITIVE);
 
         SearchResponse response = esClient.prepareSearch(esSettings.getExpressionIndex())
                 .setTypes("expressionrecord")
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setQuery(queryBuilder)
                 .addAggregation(termsBuilder)
-                .setFrom(0).setSize(size)
+                .setFrom(0).setSize(suggestionRequest.getSize())
                 .setExplain(true)
                 .execute()
                 .actionGet();
@@ -114,6 +127,14 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
         suggestions.addAll(terms.getBuckets().stream().map(entry -> new SuggestionFieldResponse(entry.getKey())).collect(Collectors.toList()));
 
         return suggestions;
+    }
+
+    private String highlightedText(Text[] fragments) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Text fragment : fragments) {
+            stringBuilder.append(fragment.string());
+        }
+        return stringBuilder.toString();
     }
 
     private String buildUntouchedRegex(String searchString) {

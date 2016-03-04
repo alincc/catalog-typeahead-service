@@ -15,27 +15,30 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/catalog/v1/typeahead")
 public class SuggestionController {
-
     private static final Logger LOG = LoggerFactory.getLogger(SuggestionController.class);
 
+    private final ISuggestionService suggestionService;
+
     @Autowired
-    private ISuggestionService suggestionService;
+    public SuggestionController(ISuggestionService suggestionService) {
+        this.suggestionService = suggestionService;
+    }
 
     @RequestMapping(value = "/suggestions", method = RequestMethod.GET)
     public ResponseEntity<SuggestionRoot> getSuggestion(SuggestionRequest suggestionRequest) {
-        SuggestionRoot suggestionRoot = suggestionService.getSuggestions(suggestionRequest.getQuery(), suggestionRequest.getMediaType(), suggestionRequest.getSize());
+        SuggestionRoot suggestionRoot = suggestionService.getSuggestions(suggestionRequest);
         return new ResponseEntity<>(suggestionRoot, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/suggestions/fields/{field}", method = RequestMethod.GET)
     public ResponseEntity<SuggestionFieldRoot> getSuggestionField(@PathVariable("field") String field, SuggestionRequest suggestionRequest) {
-        SuggestionFieldRoot suggestionFieldRoot = suggestionService.getSuggestionsField(suggestionRequest.getQuery(), field, suggestionRequest.getMediaType(), suggestionRequest.getSize());
+        SuggestionFieldRoot suggestionFieldRoot = suggestionService.getSuggestionsField(suggestionRequest, field);
         return new ResponseEntity<>(suggestionFieldRoot, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/suggestions", method = RequestMethod.POST)
     public ResponseEntity saveSuggestion(@RequestBody SuggestionQuery suggestionQuery) {
-        suggestionService.saveSuggestion(suggestionQuery.getSentence(), suggestionQuery.getMediaType());
+        suggestionService.saveSuggestion(suggestionQuery);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

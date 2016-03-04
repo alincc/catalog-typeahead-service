@@ -2,6 +2,8 @@ package no.microservices.typeahead.core.elasticsearch.service;
 
 import no.microservices.typeahead.core.elasticsearch.exception.SuggestionException;
 import no.microservices.typeahead.core.elasticsearch.repository.SuggestionRepository;
+import no.microservices.typeahead.model.SuggestionQuery;
+import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
 import no.microservices.typeahead.model.SuggestionRoot;
 import no.microservices.typeahead.model.field.SuggestionFieldResponse;
@@ -16,28 +18,31 @@ import java.util.List;
  */
 @Service
 public class SuggestionService implements ISuggestionService {
+    private final SuggestionRepository suggestionRepository;
 
     @Autowired
-    private SuggestionRepository suggestionRepository;
+    public SuggestionService(SuggestionRepository suggestionRepository) {
+        this.suggestionRepository = suggestionRepository;
+    }
 
     @Override
-    public SuggestionRoot getSuggestions(String query, String mediaType, int size) {
-        List<SuggestionResponse> suggestionElements = suggestionRepository.getSuggestions(query, mediaType, size);
+    public SuggestionRoot getSuggestions(SuggestionRequest suggestionRequest) {
+        List<SuggestionResponse> suggestionElements = suggestionRepository.getSuggestions(suggestionRequest);
         return new SuggestionRoot(suggestionElements);
     }
 
     @Override
-    public SuggestionFieldRoot getSuggestionsField(String query, String field, String mediaType, int size) {
-        List<SuggestionFieldResponse> suggestionElements = suggestionRepository.getSuggestionsField(query, field, mediaType, size);
+    public SuggestionFieldRoot getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
+        List<SuggestionFieldResponse> suggestionElements = suggestionRepository.getSuggestionsField(suggestionRequest, field);
         return new SuggestionFieldRoot(suggestionElements);
     }
 
     @Override
-    public void saveSuggestion(String query, String mediaType) {
+    public void saveSuggestion(SuggestionQuery suggestionQuery) {
         try {
-            suggestionRepository.addSuggestion(query, mediaType);
+            suggestionRepository.addSuggestion(suggestionQuery);
         } catch (Exception e) {
-            throw new SuggestionException("Failed to save suggestion '" + query + "' with mediaType '" + mediaType + "'", e);
+            throw new SuggestionException("Failed to save suggestion '" + suggestionQuery.getSentence() + "' with mediatype '" + suggestionQuery.getMediatype() + "'", e);
         }
     }
 }

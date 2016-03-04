@@ -13,14 +13,14 @@ public class SuggestionQuery {
     private String sentence;
 
     @Length(max = 32)
-    private String mediaType = "ALL";
+    private String mediatype = "ALL";
 
     public SuggestionQuery() {
     }
 
-    public SuggestionQuery(String sentence, String mediaType) {
+    public SuggestionQuery(String sentence, String mediatype) {
         this.sentence = sentence;
-        this.mediaType = mediaType;
+        this.mediatype = mediatype;
     }
 
     public String getSentence() {
@@ -31,11 +31,11 @@ public class SuggestionQuery {
         this.sentence = sentence;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    public String getMediatype() {
+        return mediatype;
     }
 
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
+    public void setMediatype(String mediatype) {
+        this.mediatype = mediatype;
     }
 }

@@ -9,30 +9,30 @@ import javax.validation.constraints.Max;
  */
 public class SuggestionRequest {
     @Length(max = 1024)
-    private String query;
+    private String q;
 
     @Length(max = 32)
-    private String mediaType = "ALL";
+    private String mediatype = "ALL";
 
     @Max(100)
     private int size = 10;
 
-    private boolean addHighlight;
+    private boolean highlight;
 
-    public String getQuery() {
-        return query;
+    public String getQ() {
+        return q;
     }
 
-    public void setQuery(String query) {
-        this.query = query;
+    public void setQ(String q) {
+        this.q = q;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    public String getMediatype() {
+        return mediatype;
     }
 
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
+    public void setMediatype(String mediatype) {
+        this.mediatype = mediatype;
     }
 
     public int getSize() {
@@ -43,11 +43,11 @@ public class SuggestionRequest {
         this.size = size;
     }
 
-    public boolean isAddHighlight() {
-        return addHighlight;
+    public boolean isHighlight() {
+        return highlight;
     }
 
-    public void setAddHighlight(boolean addHighlight) {
-        this.addHighlight = addHighlight;
+    public void setHighlight(boolean highlight) {
+        this.highlight = highlight;
     }
 }
