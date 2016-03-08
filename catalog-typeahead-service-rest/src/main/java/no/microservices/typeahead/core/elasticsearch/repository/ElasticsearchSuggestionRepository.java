@@ -1,6 +1,7 @@
 package no.microservices.typeahead.core.elasticsearch.repository;
 
 import no.microservices.typeahead.config.ElasticsearchSettings;
+import no.microservices.typeahead.core.exception.InvalidFieldException;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
