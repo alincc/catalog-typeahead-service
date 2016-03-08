@@ -52,7 +52,7 @@ public class SuggestionControllerTest {
     public void suggestionField() {
         SuggestionRequest suggestionRequest = new SuggestionRequest();
         suggestionRequest.setQ("Alf");
-        String field = "namecreator";
+        String field = "namecreators";
         SuggestionResponse suggestionFieldResponse = new SuggestionResponse("Alfred Bræle","Alfred Bræle",0);
         SuggestionRoot suggestionFieldRoot = new SuggestionRoot(Arrays.asList(suggestionFieldResponse));
 

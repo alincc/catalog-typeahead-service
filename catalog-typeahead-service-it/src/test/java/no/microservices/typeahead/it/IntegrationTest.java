@@ -4,7 +4,6 @@ import no.microservices.typeahead.Application;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRoot;
 import org.elasticsearch.client.Client;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {Application.class, ElasticSearchTestConfig.class })
+@SpringApplicationConfiguration(classes = {Application.class, ElasticSearchTestConfig.class})
 @WebIntegrationTest("server.port: 0")
 public class IntegrationTest {
 
@@ -55,14 +54,9 @@ public class IntegrationTest {
         rest = new TestRestTemplate();
     }
 
-    @After
-    public void tearDown() throws Exception {
-        embeddedElasticsearch.reinitializeDatabase();
-    }
-
     @Test
     public void suggestionQueryTest() {
-        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions?q={query}&mediatype={mediatype}";
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}";
         ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Knu", "all");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Knut Lippestad", response.getBody().getItems().get(0).getValue());
@@ -71,33 +65,29 @@ public class IntegrationTest {
 
     @Test
     public void testHighlight() {
-        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions?q={query}&mediatype={mediatype}&highlight=true";
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}&highlight=true";
         ResponseEntity<SuggestionRoot> entity = rest.getForEntity(uri, SuggestionRoot.class, "Knut", "all");
         assertThat("Text is highlighted", entity.getBody().getItems().get(0).getLabel(), is("<em>Knut</em> Lippestad"));
     }
 
     @Test
     public void suggestionInsertTest() {
-        String postUri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions";
-        SuggestionQuery request1 = new SuggestionQuery("Knut Hamsund", "bøker");
-        SuggestionQuery request2 = new SuggestionQuery("Knut Lippestad", "bøker");
-        SuggestionQuery request3 = new SuggestionQuery("Knut Limstrand", "bøker");
-        ResponseEntity response1 = rest.postForEntity(postUri, request1, String.class);
-        ResponseEntity response2 = rest.postForEntity(postUri, request2, String.class);
-        ResponseEntity response3 = rest.postForEntity(postUri, request3, String.class);
+        String putUri = "http://localhost:" + port + "/catalog/v1/typeahead/search";
+        SuggestionQuery request1 = new SuggestionQuery("Kjeks Luthor", "bøker");
+        rest.put(putUri, request1);
 
-        assertEquals(HttpStatus.OK, response1.getStatusCode());
-        assertEquals(HttpStatus.OK, response2.getStatusCode());
-        assertEquals(HttpStatus.OK, response3.getStatusCode());
+        embeddedElasticsearch.refreshIndices();
 
-        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions?q={query}&mediatype={mediatype}";
-        ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Knut", "bøker");
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}";
+        ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Kjeks", "bøker");
+
+        assertThat("Response should contain 1 hit", response.getBody().getItems().size(), is(1));
+        assertThat("Should return Kjeks Luthor", response.getBody().getItems().get(0).getLabel(), is("Kjeks Luthor"));
     }
 
     @Test
     public void suggestionFieldsTest() {
-        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/suggestions/fields/namecreators/?q={query}";
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/namecreators?q={query}";
         ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "K");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Koerner, Steen", response.getBody().getItems().get(0).getLabel());

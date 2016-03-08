@@ -114,6 +114,10 @@ public class EmbeddedElasticsearch {
         bulkRequest.add(client.prepareIndex(SUGGESTION_SCHEMA_NAME, SUGGESTION_TYPE_NAME, "-1232015698").setSource(getDataSource("-1232015698")));
         bulkRequest.execute().actionGet();
 
+        refreshIndices();
+    }
+
+    public void refreshIndices() {
         RefreshRequest refreshRequest = new RefreshRequest().indices(EXPRESSION_SCHEMA_NAME, SUGGESTION_SCHEMA_NAME);
         client.admin().indices().refresh(refreshRequest).actionGet();
     }

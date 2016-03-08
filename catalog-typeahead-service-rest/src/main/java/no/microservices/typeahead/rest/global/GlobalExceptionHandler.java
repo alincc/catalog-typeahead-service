@@ -1,5 +1,6 @@
 package no.microservices.typeahead.rest.global;
 
+import no.microservices.typeahead.core.exception.InvalidFieldException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,12 @@ import java.util.Collections;
 public class GlobalExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(InvalidFieldException.class)
+    @ResponseStatus(value= HttpStatus.BAD_REQUEST, reason="Invalid Field")
+    public void handleInvalidField() {
+        
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "It looks like we have a internal error in our application. The error have been logged and will be looked at by our development team.")

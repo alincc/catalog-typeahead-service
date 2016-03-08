@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by andreasb on 15.10.15.
- */
 @Service
 public class SuggestionService implements ISuggestionService {
     private final SuggestionRepository suggestionRepository;
