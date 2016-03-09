@@ -1,1 +1,0 @@
-package no.microservices.typeahead.core;

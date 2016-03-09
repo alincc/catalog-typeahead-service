@@ -1,16 +1,21 @@
 package no.microservices.typeahead.rest.controller;
 
 import no.microservices.typeahead.core.elasticsearch.service.ISuggestionService;
+import no.microservices.typeahead.core.model.SuggestionRoot;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
-import no.microservices.typeahead.model.SuggestionRoot;
+import no.microservices.typeahead.model.SuggestionRootResource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Arrays;
 
@@ -27,8 +32,18 @@ public class SuggestionControllerTest {
     private SuggestionController suggestionController;
 
     @Before
-    public void setup() {
+    public void init() {
         suggestionController = new SuggestionController(suggestionService);
+
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/catalog/v1/typeahead/search?q=JUNIT");
+        ServletRequestAttributes attributes = new ServletRequestAttributes(request);
+
+        RequestContextHolder.setRequestAttributes(attributes);
+    }
+
+    @After
+    public void cleanUp() {
+        RequestContextHolder.resetRequestAttributes();
     }
 
     @Test
@@ -41,7 +56,7 @@ public class SuggestionControllerTest {
 
         when(suggestionService.getSuggestions(suggestionRequest)).thenReturn(suggestionRoot);
 
-        ResponseEntity<SuggestionRoot> entity = suggestionController.getSuggestion(suggestionRequest);
+        ResponseEntity<SuggestionRootResource> entity = suggestionController.getSuggestion(suggestionRequest);
         assertThat("Should return Ramona Kakestein", entity.getBody().getItems().get(0).getLabel(), is("Ramona Kakestein"));
 
         verify(suggestionService).getSuggestions(suggestionRequest);
@@ -58,7 +73,7 @@ public class SuggestionControllerTest {
 
         when(suggestionService.getSuggestionsField(suggestionRequest, field)).thenReturn(suggestionFieldRoot);
 
-        ResponseEntity<SuggestionRoot> entity = suggestionController.getSuggestionField(field, suggestionRequest);
+        ResponseEntity<SuggestionRootResource> entity = suggestionController.getSuggestionField(field, suggestionRequest);
 
         assertThat("Alfred Bræle should be returned", entity.getBody().getItems().get(0).getLabel(), is("Alfred Bræle"));
 

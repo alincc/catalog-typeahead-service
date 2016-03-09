@@ -1,17 +1,19 @@
 package no.microservices.typeahead.model;
 
+import org.springframework.hateoas.ResourceSupport;
+
 import java.util.List;
 
 /**
  * Created by andreasb on 15.10.15.
  */
-public class SuggestionRoot {
+public class SuggestionRootResource extends ResourceSupport {
     private List<SuggestionResponse> items;
 
-    public SuggestionRoot() {
+    public SuggestionRootResource() {
     }
 
-    public SuggestionRoot(List<SuggestionResponse> items) {
+    public SuggestionRootResource(List<SuggestionResponse> items) {
         this.items = items;
     }
 

@@ -12,7 +12,7 @@ public class SuggestionRequest {
     private String q;
 
     @Length(max = 32)
-    private String mediatype = "ALL";
+    private String mediaType = "ALL";
 
     @Max(100)
     private int size = 10;
@@ -27,12 +27,12 @@ public class SuggestionRequest {
         this.q = q;
     }
 
-    public String getMediatype() {
-        return mediatype;
+    public String getMediaType() {
+        return mediaType;
     }
 
-    public void setMediatype(String mediatype) {
-        this.mediatype = mediatype;
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 
     public int getSize() {

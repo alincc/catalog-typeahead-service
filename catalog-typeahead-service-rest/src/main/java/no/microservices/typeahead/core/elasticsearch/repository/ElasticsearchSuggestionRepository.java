@@ -1,7 +1,6 @@
 package no.microservices.typeahead.core.elasticsearch.repository;
 
 import no.microservices.typeahead.config.ElasticsearchSettings;
-import no.microservices.typeahead.core.exception.InvalidFieldException;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -73,7 +71,7 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
 
     @Override
     public List<SuggestionResponse> getSuggestions(SuggestionRequest suggestionRequest) {
-        String mediaTypeFixed = suggestionRequest.getMediatype().toLowerCase().trim();
+        String mediaTypeFixed = suggestionRequest.getMediaType().toLowerCase().trim();
         List<SuggestionResponse> suggestions = new ArrayList<>();
 
         SearchRequestBuilder searchRequestBuilder = esClient.prepareSearch(esSettings.getSuggestionIndex())
@@ -104,8 +102,8 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     @Override
     public List<SuggestionResponse> getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        if (!"ALL".equalsIgnoreCase(suggestionRequest.getMediatype()) && !StringUtils.isBlank(suggestionRequest.getMediatype())) {
-            queryBuilder.must(QueryBuilders.queryStringQuery(suggestionRequest.getMediatype()).field("mediatype"));
+        if (!"ALL".equalsIgnoreCase(suggestionRequest.getMediaType()) && !StringUtils.isBlank(suggestionRequest.getMediaType())) {
+            queryBuilder.must(QueryBuilders.queryStringQuery(suggestionRequest.getMediaType()).field("mediatype"));
         }
         queryBuilder.must(QueryBuilders.queryStringQuery(suggestionRequest.getQ() + "*").field(field));
 

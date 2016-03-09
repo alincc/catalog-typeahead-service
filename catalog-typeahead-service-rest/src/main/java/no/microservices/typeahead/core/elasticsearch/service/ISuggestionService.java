@@ -1,8 +1,8 @@
 package no.microservices.typeahead.core.elasticsearch.service;
 
+import no.microservices.typeahead.core.model.SuggestionRoot;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
-import no.microservices.typeahead.model.SuggestionRoot;
 
 /**
  * Created by andreasb on 15.10.15.

@@ -3,10 +3,10 @@ package no.microservices.typeahead.core.elasticsearch.service;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import no.microservices.typeahead.core.elasticsearch.exception.SuggestionException;
 import no.microservices.typeahead.core.elasticsearch.repository.SuggestionRepository;
+import no.microservices.typeahead.core.model.SuggestionRoot;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
-import no.microservices.typeahead.model.SuggestionRoot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -2,7 +2,7 @@ package no.microservices.typeahead.it;
 
 import no.microservices.typeahead.Application;
 import no.microservices.typeahead.model.SuggestionQuery;
-import no.microservices.typeahead.model.SuggestionRoot;
+import no.microservices.typeahead.model.SuggestionRootResource;
 import org.elasticsearch.client.Client;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -57,7 +57,7 @@ public class IntegrationTest {
     @Test
     public void suggestionQueryTest() {
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}";
-        ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Knu", "all");
+        ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "Knu", "all");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Knut Lippestad", response.getBody().getItems().get(0).getValue());
         assertEquals(165, response.getBody().getItems().get(0).getCount());
@@ -66,7 +66,7 @@ public class IntegrationTest {
     @Test
     public void testHighlight() {
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}&highlight=true";
-        ResponseEntity<SuggestionRoot> entity = rest.getForEntity(uri, SuggestionRoot.class, "Knut", "all");
+        ResponseEntity<SuggestionRootResource> entity = rest.getForEntity(uri, SuggestionRootResource.class, "Knut", "all");
         assertThat("Text is highlighted", entity.getBody().getItems().get(0).getLabel(), is("<em>Knut</em> Lippestad"));
     }
 
@@ -79,7 +79,7 @@ public class IntegrationTest {
         embeddedElasticsearch.refreshIndices();
 
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}";
-        ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "Kjeks", "bøker");
+        ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "Kjeks", "bøker");
 
         assertThat("Response should contain 1 hit", response.getBody().getItems().size(), is(1));
         assertThat("Should return Kjeks Luthor", response.getBody().getItems().get(0).getLabel(), is("Kjeks Luthor"));
@@ -88,7 +88,7 @@ public class IntegrationTest {
     @Test
     public void suggestionFieldsTest() {
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/namecreators?q={query}";
-        ResponseEntity<SuggestionRoot> response = rest.getForEntity(uri, SuggestionRoot.class, "K");
+        ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "K");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Koerner, Steen", response.getBody().getItems().get(0).getLabel());
     }
