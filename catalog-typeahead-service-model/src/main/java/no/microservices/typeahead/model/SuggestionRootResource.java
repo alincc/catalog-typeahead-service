@@ -1,27 +1,26 @@
 package no.microservices.typeahead.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.ResourceSupport;
-
-import java.util.List;
 
 /**
  * Created by andreasb on 15.10.15.
  */
 public class SuggestionRootResource extends ResourceSupport {
-    private List<SuggestionResponse> items;
+
+    @JsonProperty("_embedded")
+    private EmbeddedWrapper embedded;
 
     public SuggestionRootResource() {
     }
 
-    public SuggestionRootResource(List<SuggestionResponse> items) {
-        this.items = items;
+    public SuggestionRootResource(EmbeddedWrapper embedded) {
+        this.embedded = embedded;
     }
 
-    public List<SuggestionResponse> getItems() {
-        return items;
-    }
-
-    public void setItems(List<SuggestionResponse> items) {
-        this.items = items;
+    @JsonIgnore
+    public EmbeddedWrapper getEmbedded() {
+        return embedded;
     }
 }

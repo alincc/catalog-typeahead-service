@@ -57,7 +57,7 @@ public class SuggestionControllerTest {
         when(suggestionService.getSuggestions(suggestionRequest)).thenReturn(suggestionRoot);
 
         ResponseEntity<SuggestionRootResource> entity = suggestionController.getSuggestion(suggestionRequest);
-        assertThat("Should return Ramona Kakestein", entity.getBody().getItems().get(0).getLabel(), is("Ramona Kakestein"));
+        assertThat("Should return Ramona Kakestein", entity.getBody().getEmbedded().getItems().get(0).getLabel(), is("Ramona Kakestein"));
 
         verify(suggestionService).getSuggestions(suggestionRequest);
         verifyNoMoreInteractions(suggestionService);
@@ -75,7 +75,7 @@ public class SuggestionControllerTest {
 
         ResponseEntity<SuggestionRootResource> entity = suggestionController.getSuggestionField(field, suggestionRequest);
 
-        assertThat("Alfred Bræle should be returned", entity.getBody().getItems().get(0).getLabel(), is("Alfred Bræle"));
+        assertThat("Alfred Bræle should be returned", entity.getBody().getEmbedded().getItems().get(0).getLabel(), is("Alfred Bræle"));
 
         verify(suggestionService).getSuggestionsField(suggestionRequest, field);
         verifyNoMoreInteractions(suggestionService);

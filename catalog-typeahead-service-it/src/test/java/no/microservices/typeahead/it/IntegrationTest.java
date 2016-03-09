@@ -59,15 +59,15 @@ public class IntegrationTest {
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}";
         ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "Knu", "all");
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Knut Lippestad", response.getBody().getItems().get(0).getValue());
-        assertEquals(165, response.getBody().getItems().get(0).getCount());
+        assertEquals("Knut Lippestad", response.getBody().getEmbedded().getItems().get(0).getValue());
+        assertEquals(165, response.getBody().getEmbedded().getItems().get(0).getCount());
     }
 
     @Test
     public void testHighlight() {
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}&highlight=true";
         ResponseEntity<SuggestionRootResource> entity = rest.getForEntity(uri, SuggestionRootResource.class, "Knut", "all");
-        assertThat("Text is highlighted", entity.getBody().getItems().get(0).getLabel(), is("<em>Knut</em> Lippestad"));
+        assertThat("Text is highlighted", entity.getBody().getEmbedded().getItems().get(0).getLabel(), is("<em>Knut</em> Lippestad"));
     }
 
     @Test
@@ -81,8 +81,8 @@ public class IntegrationTest {
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}";
         ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "Kjeks", "bøker");
 
-        assertThat("Response should contain 1 hit", response.getBody().getItems().size(), is(1));
-        assertThat("Should return Kjeks Luthor", response.getBody().getItems().get(0).getLabel(), is("Kjeks Luthor"));
+        assertThat("Response should contain 1 hit", response.getBody().getEmbedded().getItems().size(), is(1));
+        assertThat("Should return Kjeks Luthor", response.getBody().getEmbedded().getItems().get(0).getLabel(), is("Kjeks Luthor"));
     }
 
     @Test
@@ -90,6 +90,6 @@ public class IntegrationTest {
         String uri = "http://localhost:" + port + "/catalog/v1/typeahead/namecreators?q={query}";
         ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "K");
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Koerner, Steen", response.getBody().getItems().get(0).getLabel());
+        assertEquals("Koerner, Steen", response.getBody().getEmbedded().getItems().get(0).getLabel());
     }
 }

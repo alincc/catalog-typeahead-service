@@ -2,6 +2,7 @@ package no.microservices.typeahead.rest.assembler;
 
 import no.microservices.typeahead.core.model.SuggestionRoot;
 import no.microservices.typeahead.model.SuggestionRootResource;
+import no.microservices.typeahead.model.EmbeddedWrapper;
 import no.microservices.typeahead.rest.controller.SuggestionController;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
@@ -15,7 +16,8 @@ public class SuggestionRootResourceAssembler extends ResourceAssemblerSupport<Su
 
     @Override
     public SuggestionRootResource toResource(SuggestionRoot entity) {
-        SuggestionRootResource suggestionRootResource = new SuggestionRootResource(entity.getItems());
+        EmbeddedWrapper embeddedWrapper = new EmbeddedWrapper(entity.getItems());
+        SuggestionRootResource suggestionRootResource = new SuggestionRootResource(embeddedWrapper);
         suggestionRootResource.add(createSelfLink());
         return suggestionRootResource;
     }
