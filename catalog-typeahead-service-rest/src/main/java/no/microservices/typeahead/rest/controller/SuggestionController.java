@@ -8,6 +8,7 @@ import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionRootResource;
 import no.microservices.typeahead.rest.assembler.SuggestionRootResourceAssembler;
 import no.microservices.typeahead.rest.validator.FieldValidator;
+import no.nb.htrace.annotation.Traceable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class SuggestionController {
         this.suggestionService = suggestionService;
     }
 
+    @Traceable(description = "search")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public ResponseEntity<SuggestionRootResource> getSuggestion(SuggestionRequest suggestionRequest, @PageableDefault Pageable pageable) {
         SuggestionRoot suggestionRoot = suggestionService.getSuggestions(suggestionRequest, pageable);
@@ -45,6 +47,7 @@ public class SuggestionController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @Traceable(description = "field")
     @RequestMapping(value = "/{field}", method = RequestMethod.GET)
     public ResponseEntity<SuggestionRootResource> getSuggestionField(@PathVariable("field") String field,
                                                                      SuggestionRequest suggestionRequest,

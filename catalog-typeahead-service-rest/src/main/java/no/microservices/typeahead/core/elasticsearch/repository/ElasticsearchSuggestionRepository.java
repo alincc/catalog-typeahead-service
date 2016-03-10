@@ -1,9 +1,11 @@
 package no.microservices.typeahead.core.elasticsearch.repository;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import no.microservices.typeahead.config.ElasticsearchSettings;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
+import no.nb.htrace.annotation.Traceable;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -35,9 +37,6 @@ import java.util.stream.Collectors;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-/**
- * Created by andreasb on 16.10.15.
- */
 @Repository
 public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     private static final Logger LOG = LoggerFactory.getLogger(SuggestionRepository.class);
@@ -73,6 +72,8 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     }
 
     @Override
+    @Traceable(description = "es suggestion")
+    @HystrixCommand(fallbackMethod = "getSuggestionsFallback")
     public Page<SuggestionResponse> getSuggestions(SuggestionRequest suggestionRequest, Pageable pageable) {
         String mediaTypeFixed = suggestionRequest.getMediaType().toLowerCase().trim();
         List<SuggestionResponse> suggestions = new ArrayList<>();
@@ -103,6 +104,8 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     }
 
     @Override
+    @Traceable(description = "es suggestionField")
+    @HystrixCommand(fallbackMethod = "getSuggestionsFieldFallback")
     public Page<SuggestionResponse> getSuggestionsField(SuggestionRequest suggestionRequest, String field, Pageable pageable) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!"ALL".equalsIgnoreCase(suggestionRequest.getMediaType()) && !StringUtils.isBlank(suggestionRequest.getMediaType())) {
@@ -149,5 +152,13 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
         }
         result.append(").*){").append(tokens.length).append("}");
         return result.toString();
+    }
+
+    private List<SuggestionResponse> getSuggestionsFallback(SuggestionRequest suggestionRequest, Pageable pageable) {
+        return new ArrayList<>();
+    }
+
+    private List<SuggestionResponse> getSuggestionsFieldFallback(SuggestionRequest suggestionRequest, String field, Pageable pageable) {
+        return new ArrayList<>();
     }
 }

@@ -97,7 +97,11 @@
             <version>2.4</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>no.nb.htrace</groupId>
+            <artifactId>htrace-impl-spring</artifactId>
+            <version>0.0.1-63</version>
+        </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
