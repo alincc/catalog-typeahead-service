@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -52,14 +54,15 @@ public class SuggestionControllerTest {
         suggestionRequest.setQ("Ra");
 
         SuggestionResponse suggestionResponse = new SuggestionResponse("Ramona Kakestein","Ramona Kakestein",2);
-        SuggestionRoot suggestionRoot = new SuggestionRoot(Arrays.asList(suggestionResponse));
+        SuggestionRoot suggestionRoot = new SuggestionRoot(new PageImpl<>(Arrays.asList(suggestionResponse)));
 
-        when(suggestionService.getSuggestions(suggestionRequest)).thenReturn(suggestionRoot);
+        PageRequest pageRequest = new PageRequest(0, 10);
+        when(suggestionService.getSuggestions(suggestionRequest, pageRequest)).thenReturn(suggestionRoot);
 
-        ResponseEntity<SuggestionRootResource> entity = suggestionController.getSuggestion(suggestionRequest);
+        ResponseEntity<SuggestionRootResource> entity = suggestionController.getSuggestion(suggestionRequest, new PageRequest(0, 10));
         assertThat("Should return Ramona Kakestein", entity.getBody().getEmbedded().getItems().get(0).getLabel(), is("Ramona Kakestein"));
 
-        verify(suggestionService).getSuggestions(suggestionRequest);
+        verify(suggestionService).getSuggestions(suggestionRequest, pageRequest);
         verifyNoMoreInteractions(suggestionService);
     }
 
@@ -69,15 +72,15 @@ public class SuggestionControllerTest {
         suggestionRequest.setQ("Alf");
         String field = "namecreators";
         SuggestionResponse suggestionFieldResponse = new SuggestionResponse("Alfred Bræle","Alfred Bræle",0);
-        SuggestionRoot suggestionFieldRoot = new SuggestionRoot(Arrays.asList(suggestionFieldResponse));
+        SuggestionRoot suggestionFieldRoot = new SuggestionRoot(new PageImpl<>(Arrays.asList(suggestionFieldResponse)));
+        PageRequest pageRequest = new PageRequest(0, 10);
+        when(suggestionService.getSuggestionsField(suggestionRequest, field, pageRequest)).thenReturn(suggestionFieldRoot);
 
-        when(suggestionService.getSuggestionsField(suggestionRequest, field)).thenReturn(suggestionFieldRoot);
-
-        ResponseEntity<SuggestionRootResource> entity = suggestionController.getSuggestionField(field, suggestionRequest);
+        ResponseEntity<SuggestionRootResource> entity = suggestionController.getSuggestionField(field, suggestionRequest, pageRequest);
 
         assertThat("Alfred Bræle should be returned", entity.getBody().getEmbedded().getItems().get(0).getLabel(), is("Alfred Bræle"));
 
-        verify(suggestionService).getSuggestionsField(suggestionRequest, field);
+        verify(suggestionService).getSuggestionsField(suggestionRequest, field, pageRequest);
         verifyNoMoreInteractions(suggestionService);
     }
 

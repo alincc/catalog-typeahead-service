@@ -21,7 +21,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -91,5 +93,19 @@ public class IntegrationTest {
         ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "K");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Koerner, Steen", response.getBody().getEmbedded().getItems().get(0).getLabel());
+    }
+
+    @Test
+    public void whenGettingSuggestionsOnPageZeroOfZeroThenReturnItems() throws Exception {
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}&page=0&size=10";
+        ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "Knu", "all");
+        assertThat(response.getBody().getEmbedded().getItems(), hasSize(1));
+    }
+
+    @Test
+    public void whenGettingSuggestionsOnPageOneOfZeroThenReturnNoItems() throws Exception {
+        String uri = "http://localhost:" + port + "/catalog/v1/typeahead/search?q={query}&mediatype={mediatype}&page=1&size=10";
+        ResponseEntity<SuggestionRootResource> response = rest.getForEntity(uri, SuggestionRootResource.class, "Knu", "all");
+        assertThat(response.getBody().getEmbedded().getItems(), is(nullValue()));
     }
 }

@@ -23,6 +23,9 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -70,7 +73,7 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     }
 
     @Override
-    public List<SuggestionResponse> getSuggestions(SuggestionRequest suggestionRequest) {
+    public Page<SuggestionResponse> getSuggestions(SuggestionRequest suggestionRequest, Pageable pageable) {
         String mediaTypeFixed = suggestionRequest.getMediaType().toLowerCase().trim();
         List<SuggestionResponse> suggestions = new ArrayList<>();
 
@@ -78,7 +81,7 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
                 .setTypes("suggestion")
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setQuery(QueryBuilders.matchPhrasePrefixQuery("sentence", suggestionRequest.getQ()))
-                .setFrom(0).setSize(suggestionRequest.getSize()).setExplain(true)
+                .setFrom(pageable.getOffset()).setSize(pageable.getPageSize()).setExplain(true)
                 .addSort("type_" + mediaTypeFixed, SortOrder.DESC)
                 .addSort("sentence", SortOrder.ASC);
 
@@ -96,18 +99,18 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
             suggestions.add(new SuggestionResponse(label, value, count));
         }
 
-        return suggestions;
+        return new PageImpl<>(suggestions, pageable, response.getHits().getTotalHits());
     }
 
     @Override
-    public List<SuggestionResponse> getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
+    public Page<SuggestionResponse> getSuggestionsField(SuggestionRequest suggestionRequest, String field, Pageable pageable) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!"ALL".equalsIgnoreCase(suggestionRequest.getMediaType()) && !StringUtils.isBlank(suggestionRequest.getMediaType())) {
             queryBuilder.must(QueryBuilders.queryStringQuery(suggestionRequest.getMediaType()).field("mediatype"));
         }
         queryBuilder.must(QueryBuilders.queryStringQuery(suggestionRequest.getQ() + "*").field(field));
 
-        TermsBuilder termsBuilder = AggregationBuilders.terms("field").field(field + ".untouched").size(suggestionRequest.getSize());
+        TermsBuilder termsBuilder = AggregationBuilders.terms("field").field(field + ".untouched").size(pageable.getPageSize());
         termsBuilder.include(buildUntouchedRegex(suggestionRequest.getQ()), Pattern.CASE_INSENSITIVE);
 
         SearchResponse response = esClient.prepareSearch(esSettings.getExpressionIndex())
@@ -115,7 +118,7 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setQuery(queryBuilder)
                 .addAggregation(termsBuilder)
-                .setFrom(0).setSize(suggestionRequest.getSize())
+                .setFrom(0).setSize(pageable.getPageSize())
                 .execute()
                 .actionGet();
 
@@ -124,7 +127,7 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
         Terms terms = response.getAggregations().get("field");
         suggestions.addAll(terms.getBuckets().stream().map(entry -> new SuggestionResponse(entry.getKey(),entry.getKey(),0)).collect(Collectors.toList()));
 
-        return suggestions;
+        return new PageImpl<>(suggestions, pageable, response.getHits().getTotalHits());
     }
 
     private String highlightedText(Text[] fragments) {

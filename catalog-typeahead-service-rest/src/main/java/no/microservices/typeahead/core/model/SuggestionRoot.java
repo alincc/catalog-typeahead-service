@@ -1,24 +1,20 @@
 package no.microservices.typeahead.core.model;
 
 import no.microservices.typeahead.model.SuggestionResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public class SuggestionRoot {
-    private List<SuggestionResponse> items;
+    private Page<SuggestionResponse> page;
 
-    public SuggestionRoot() {
+    public SuggestionRoot(Page<SuggestionResponse> page) {
+        this.page = page;
     }
 
-    public SuggestionRoot(List<SuggestionResponse> items) {
-        this.items = items;
+    public Page<SuggestionResponse> getPage() {
+        return page;
     }
 
-    public List<SuggestionResponse> getItems() {
-        return items;
-    }
-
-    public void setItems(List<SuggestionResponse> items) {
-        this.items = items;
+    public void setPage(Page<SuggestionResponse> page) {
+        this.page = page;
     }
 }

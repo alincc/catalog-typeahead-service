@@ -8,10 +8,12 @@ import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 @Service
 public class SuggestionService implements ISuggestionService {
@@ -24,15 +26,15 @@ public class SuggestionService implements ISuggestionService {
 
     @Override
     @HystrixCommand(fallbackMethod = "getSuggestionsFallback")
-    public SuggestionRoot getSuggestions(SuggestionRequest suggestionRequest) {
-        List<SuggestionResponse> suggestionElements = suggestionRepository.getSuggestions(suggestionRequest);
+    public SuggestionRoot getSuggestions(SuggestionRequest suggestionRequest, Pageable pageable) {
+        Page<SuggestionResponse> suggestionElements = suggestionRepository.getSuggestions(suggestionRequest, pageable);
         return new SuggestionRoot(suggestionElements);
     }
 
     @Override
     @HystrixCommand(fallbackMethod = "getSuggestionsFieldFallback")
-    public SuggestionRoot getSuggestionsField(SuggestionRequest suggestionRequest, String field) {
-        List<SuggestionResponse> suggestionElements = suggestionRepository.getSuggestionsField(suggestionRequest, field);
+    public SuggestionRoot getSuggestionsField(SuggestionRequest suggestionRequest, String field, Pageable pageable) {
+        Page<SuggestionResponse> suggestionElements = suggestionRepository.getSuggestionsField(suggestionRequest, field, pageable);
         return new SuggestionRoot(suggestionElements);
     }
 
@@ -45,11 +47,11 @@ public class SuggestionService implements ISuggestionService {
         }
     }
 
-    private SuggestionRoot getSuggestionsFallback(SuggestionRequest suggestionRequest) {
-        return new SuggestionRoot(new ArrayList<>());
+    private SuggestionRoot getSuggestionsFallback(SuggestionRequest suggestionRequest, Pageable pageable) {
+        return new SuggestionRoot(new PageImpl<>(Collections.emptyList()));
     }
 
-    private SuggestionRoot getSuggestionsFieldFallback(SuggestionRequest suggestionRequest, String field) {
-        return new SuggestionRoot(new ArrayList<>());
+    private SuggestionRoot getSuggestionsFieldFallback(SuggestionRequest suggestionRequest, String field, Pageable pageable) {
+        return new SuggestionRoot(new PageImpl<>(Collections.emptyList()));
     }
 }

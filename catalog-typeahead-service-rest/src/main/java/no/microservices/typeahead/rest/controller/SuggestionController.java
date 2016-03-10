@@ -2,6 +2,7 @@ package no.microservices.typeahead.rest.controller;
 
 import no.microservices.typeahead.core.elasticsearch.service.ISuggestionService;
 import no.microservices.typeahead.core.model.SuggestionRoot;
+import no.microservices.typeahead.model.EmbeddedWrapper;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRequest;
 import no.microservices.typeahead.model.SuggestionRootResource;
@@ -10,6 +11,8 @@ import no.microservices.typeahead.rest.validator.FieldValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +32,8 @@ public class SuggestionController {
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public ResponseEntity<SuggestionRootResource> getSuggestion(SuggestionRequest suggestionRequest) {
-        SuggestionRoot suggestionRoot = suggestionService.getSuggestions(suggestionRequest);
+    public ResponseEntity<SuggestionRootResource> getSuggestion(SuggestionRequest suggestionRequest, @PageableDefault Pageable pageable) {
+        SuggestionRoot suggestionRoot = suggestionService.getSuggestions(suggestionRequest, pageable);
         SuggestionRootResourceAssembler suggestionRootResourceAssembler = new SuggestionRootResourceAssembler();
         SuggestionRootResource suggestionRootResource = suggestionRootResourceAssembler.toResource(suggestionRoot);
         return new ResponseEntity<>(suggestionRootResource, HttpStatus.OK);
@@ -43,11 +46,14 @@ public class SuggestionController {
     }
 
     @RequestMapping(value = "/{field}", method = RequestMethod.GET)
-    public ResponseEntity<SuggestionRootResource> getSuggestionField(@PathVariable("field") String field, SuggestionRequest suggestionRequest) {
+    public ResponseEntity<SuggestionRootResource> getSuggestionField(@PathVariable("field") String field,
+                                                                     SuggestionRequest suggestionRequest,
+                                                                     @PageableDefault Pageable pageable) {
         FieldValidator.validate(field);
-        SuggestionRoot suggestionField = suggestionService.getSuggestionsField(suggestionRequest, field);
-        SuggestionRootResourceAssembler suggestionRootResourceAssembler = new SuggestionRootResourceAssembler();
-        SuggestionRootResource suggestionRootResource = suggestionRootResourceAssembler.toResource(suggestionField);
+        SuggestionRoot suggestionField = suggestionService.getSuggestionsField(suggestionRequest, field, pageable);
+        EmbeddedWrapper embedded = new EmbeddedWrapper(suggestionField.getPage().getContent());
+        SuggestionRootResource suggestionRootResource = new SuggestionRootResource(embedded, null);
+        suggestionRootResource.add(new Link(ServletUriComponentsBuilder.fromCurrentRequest().build().toString()).withSelfRel());
         return new ResponseEntity<>(suggestionRootResource, HttpStatus.OK);
     }
 
