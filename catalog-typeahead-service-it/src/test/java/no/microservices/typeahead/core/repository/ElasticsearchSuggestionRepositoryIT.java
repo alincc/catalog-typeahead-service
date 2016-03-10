@@ -1,6 +1,6 @@
 package no.microservices.typeahead.core.repository;
 
-import no.microservices.typeahead.Application;
+import no.microservices.typeahead.config.TestConfig;
 import no.microservices.typeahead.core.elasticsearch.repository.SuggestionRepository;
 import no.microservices.typeahead.it.ElasticSearchTestConfig;
 import no.microservices.typeahead.model.SuggestionRequest;
@@ -20,7 +20,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {Application.class, ElasticSearchTestConfig.class})
+@SpringApplicationConfiguration(classes = {TestConfig.class, ElasticSearchTestConfig.class})
 @WebIntegrationTest("server.port: 0")
 public class ElasticsearchSuggestionRepositoryIT {
 

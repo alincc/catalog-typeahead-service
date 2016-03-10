@@ -1,6 +1,6 @@
 package no.microservices.typeahead.it;
 
-import no.microservices.typeahead.Application;
+import no.microservices.typeahead.config.TestConfig;
 import no.microservices.typeahead.model.SuggestionQuery;
 import no.microservices.typeahead.model.SuggestionRootResource;
 import org.elasticsearch.client.Client;
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {Application.class, ElasticSearchTestConfig.class})
+@SpringApplicationConfiguration(classes = {TestConfig.class, ElasticSearchTestConfig.class})
 @WebIntegrationTest("server.port: 0")
 public class IntegrationTest {
 
