@@ -31,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -154,11 +155,11 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
         return result.toString();
     }
 
-    private List<SuggestionResponse> getSuggestionsFallback(SuggestionRequest suggestionRequest, Pageable pageable) {
-        return new ArrayList<>();
+    private Page<SuggestionResponse> getSuggestionsFallback(SuggestionRequest suggestionRequest, Pageable pageable) {
+        return new PageImpl<>(Collections.EMPTY_LIST);
     }
 
-    private List<SuggestionResponse> getSuggestionsFieldFallback(SuggestionRequest suggestionRequest, String field, Pageable pageable) {
-        return new ArrayList<>();
+    private Page<SuggestionResponse> getSuggestionsFieldFallback(SuggestionRequest suggestionRequest, String field, Pageable pageable) {
+        return new PageImpl<>(Collections.EMPTY_LIST);
     }
 }
