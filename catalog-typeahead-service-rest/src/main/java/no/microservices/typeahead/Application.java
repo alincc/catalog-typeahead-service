@@ -1,6 +1,8 @@
 package no.microservices.typeahead;
 
 import no.nb.htrace.annotation.EnableTracing;
+import no.nb.metrics.annotation.EnableMetrics;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,6 +24,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType
 @RefreshScope
 @EnableHystrix
 @EnableTracing
+@EnableMetrics
 @EnableHypermediaSupport(type= {HypermediaType.HAL})
 public class Application {
 

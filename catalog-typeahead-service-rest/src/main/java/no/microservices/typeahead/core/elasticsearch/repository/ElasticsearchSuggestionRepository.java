@@ -156,10 +156,10 @@ public class ElasticsearchSuggestionRepository implements SuggestionRepository {
     }
 
     private Page<SuggestionResponse> getSuggestionsFallback(SuggestionRequest suggestionRequest, Pageable pageable) {
-        return new PageImpl<>(Collections.EMPTY_LIST);
+        return new PageImpl<>(Collections.emptyList());
     }
 
     private Page<SuggestionResponse> getSuggestionsFieldFallback(SuggestionRequest suggestionRequest, String field, Pageable pageable) {
-        return new PageImpl<>(Collections.EMPTY_LIST);
+        return new PageImpl<>(Collections.emptyList());
     }
 }

@@ -1,13 +1,26 @@
 info:
-  app:
-    name: catalog-typeahead-service
-    description: Gives search suggestions based on other searches
+    app:
+        name: catalog-typeahead-service
+        description: Gives search suggestions based on other searches
+    build:
+        artifact: ${project.artifactId}
+        name: ${project.name}
+        description: ${project.description}
+        version: ${project.version}
 
 server:
-  port: 8001
+    port: 8001
+
+zipkin:
+    collector-hostname: localhost
+
+monitoring:
+    hostname: localhost
+    port: 2003
+    period: 1
 
 elastic:
-  hosts:
-    - localhost
-  suggestionIndex: suggestioncounters
-  expressionIndex: expressionrecords
+    hosts:
+        - localhost
+    suggestionIndex: suggestioncounters
+    expressionIndex: expressionrecords
