@@ -4,7 +4,7 @@ package no.microservices.typeahead.rest.validator;
 import no.microservices.typeahead.core.exception.InvalidFieldException;
 
 public class FieldValidator {
-    private static final String[] allowedFields = {"namecreators"};
+    private static final String[] allowedFields = {"namecreators", "subjectgeographic"};
 
     public static void validate(String field) {
         boolean isValid = false;
